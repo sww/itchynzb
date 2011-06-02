@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="us-ascii"?>
+<!DOCTYPE nzb PUBLIC "-//newzBin//DTD NZB 0.9//EN" "http://www.newzbin.com/DTD/nzb/nzb-0.9.dtd">
+<nzb xmlns="http://www.newzbin.com/DTD/2003/nzb">
+<file poster="poster@poster.com" date="1257150291" subject="file subject 1">
+	<groups>
+		<group>alt.group</group>
+	</groups>
+	<segments>
+		<segment bytes="1001" number="1">segment01@something.com</segment>
+	</segments>
+	</file>
+<file poster="poster@poster.com" date="1257150291" subject="file subject 2">
+	<groups>
+		<group>alt.group</group>
+	</groups>
+	<segments>
+		<segment bytes="2010" number="1">segment02@something.com</segment>
+		<segment bytes="2015" number="2">segment03@something.com</segment>
+	</segments>
+	</file>
+<file poster="poster@poster.com" date="1257150291" subject="file subject 3">
+	<groups>
+		<group>alt.group</group>
+	</groups>
+	<segments>
+		<segment bytes="3000" number="1">segment04@something.com</segment>
+	</segments>
+	</file>
+<file poster="poster@poster.com" date="1257150291" subject="file subject 4.par2">
+	<groups>
+		<group>alt.group</group>
+	</groups>
+	<segments>
+		<segment bytes="3000" number="1">segment05@something.com</segment>
+	</segments>
+	</file>
+</nzb>
