@@ -25,42 +25,6 @@ class TestCommonFunctions(unittest.TestCase):
         for subject, expected_filename in test_subjects:
             filename = helper.get_filename_from(subject)
             self.assertEqual(filename, expected_filename)
-
-    # def test_get_nzb_file(self):
-    #     nzb_files = helper.get_nzb_file('testfiles')
-    #     self.assertEqual(['testfiles/at.nzb'], nzb_files)
-
-    #     nzb_files = helper.get_nzb_file('testfiles/at.nzb')
-    #     self.assertEqual(['testfiles/at.nzb'], nzb_files)
-
-    #     nzb_files = helper.get_nzb_file('')
-    #     self.assertEqual([''], nzb_files)
- 
-# class TestCompressedFunctions(unittest.TestCase):
-#     def setUp(self):
-#         pass
-
-#     def test_unzip(self):
-#         nzb_list = compressed.unzip('testfiles/foo.zip')
-
-#         self.assertEqual(2, len(nzb_list))
-        
-#         contains = 'testfiles/Professor_Layton_and_the_Unwound_Future_NDS-VENOM.nzb' in nzb_list
-#         self.assertTrue(contains)
-
-#         contains = 'testfiles/Professor_Layton_and_the_Unwound_Future_USA_CLEAN_NDS-NukeThis.nzb' in nzb_list
-
-#         self.assertTrue(contains)
-
-#         contains = 'not_a_nzb_file' in nzb_list
-        
-#         self.assertFalse(contains)
-        
-#     def tearDown(self):
-#         from os import remove
-
-#         remove('testfiles/Professor_Layton_and_the_Unwound_Future_USA_CLEAN_NDS-NukeThis.nzb')
-#         remove('testfiles/Professor_Layton_and_the_Unwound_Future_NDS-VENOM.nzb')
-    
+   
 if __name__ == '__main__':
     unittest.main()
