@@ -63,14 +63,19 @@ def show_progress():
 
         if speed > 0:
             eta = (Tracker.total_size - Tracker.downloaded) / (speed * 1024)
+        else:
+            speed = 0
             
         helper.print_static(' %s%% [%s] %s KB/s' % (percentage, progress, speed))
-        helper.print_static(' %s%% [%s] %s KB/s  %d ETA' % (format(percentage, '3.1f'), progress, format(speed, '3.1f'), helper.htime(eta)), width)
+        helper.print_static(' %s%% [%s] %s KB/s  %s ETA' % (format(percentage, '3.1f'), progress, format(speed, '3.1f'), helper.htime(eta)), width)
         sleep(1)
 
-    speed = format((Tracker.downloaded / 1024.0)/(time() - start), '3.1f')
+    if Tracker.total_size:
+        speed = format((Tracker.downloaded / 1024.0)/(time() - start), '3.1f')
+        speed = speed + ' ' + helper.get_size(float(speed)) + '/s'
+
     # Complains about unreferenced vars if downloaded files already exist.
-    helper.print_static(' %s%% [%s] %s KB/s' % ('100', COMPLETE_CHAR * progress_bar_length, speed), width)
+    helper.print_static(' %s%% [%s] %s' % ('100', COMPLETE_CHAR * progress_bar_length, speed), width)
     # Speed probably isn't the right variable to use here.
     print '\n\n%s (%s KB/s)' % (datetime.now().strftime('%Y-%m-%d %H:%M:%S'), speed),
     print '[%s/%s] in %d s\n' % (Tracker.downloaded, Tracker.total_size, time() - start)
