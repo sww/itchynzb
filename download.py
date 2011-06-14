@@ -9,7 +9,6 @@ from eventlet.queue import Queue
 from decode import Decode
 from nntp import NNTP
 from parser import parse_nzb
-#from common.helper import get_filename_from, get_size, print_static
 
 COMPLETE_CHAR = '='
 
@@ -45,9 +44,10 @@ def show_progress():
     progress_bar_length = int(width * 0.5)
     p.stdout.close()
     eta = 0
+    speed = 0
 
     while Tracker.downloaded < Tracker.total_size:
-        # Get terminal info.
+        # Get terminal dimensions.
         p = subprocess.Popen(['stty size'], shell=True, stdout=subprocess.PIPE)
         length, width = (int(i) for i in p.stdout.read().strip().split())
         progress_bar_length = int(width * 0.5)
@@ -57,7 +57,6 @@ def show_progress():
         percentage = (Tracker.downloaded / float(Tracker.total_size)) * 100.0
         # Progress bar output.
         progress = COMPLETE_CHAR * int(percentage * progress_bar_length/100.0)
-        #percentage = format(percentage, '3.1f')
         # Pad progress bar.
         progress = progress.ljust(progress_bar_length, ' ')
 
@@ -70,13 +69,13 @@ def show_progress():
         helper.print_static(' %s%% [%s] %s KB/s  %s ETA' % (format(percentage, '3.1f'), progress, format(speed, '3.1f'), helper.htime(eta)), width)
         sleep(1)
 
+    # For the completion progress bar and statistics.
     if Tracker.total_size:
         speed = format((Tracker.downloaded / 1024.0)/(time() - start), '3.1f')
-        speed = speed + ' ' + helper.get_size(float(speed)) + '/s'
-
-    # Complains about unreferenced vars if downloaded files already exist.
+        speed = speed + ' ' + helper.get_size(float(speed), suffix_only=True) + '/s'
     helper.print_static(' %s%% [%s] %s' % ('100', COMPLETE_CHAR * progress_bar_length, speed), width)
-    # Speed probably isn't the right variable to use here.
+
+    # Print out completion download info.
     print '\n\n%s (%s KB/s)' % (datetime.now().strftime('%Y-%m-%d %H:%M:%S'), speed),
     print '[%s/%s] in %d s\n' % (Tracker.downloaded, Tracker.total_size, time() - start)
 

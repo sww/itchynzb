@@ -1,6 +1,6 @@
 #
 """
-Common functions.
+Miscellaneous helper functions.
 """
 import glob
 import os
@@ -43,19 +43,6 @@ def get_download_path(base_path, new_dir):
 def get_filename_from(subject):
     """Return a filename from a subject."""
     # # Use multiple regexs because I can't figure one that works.
-    # regex_list = [
-    #     #'.*?(?:"|&quot)([A-Za-z0-9\-_\.]+\.\w+).*',
-    #     '.*?(?:"|&quot|&quot;|\s*)([\.0-9A-Za-z\[\]_\ \(\)]+\.\w+).*',
-    #     #'.*?(?:\s+)([A-Za-z0-9\-_\.]+\.\w+).*',
-    #     #'.*?([A-Za-z0-9\-_\.]+\.\w+).*',
-    # ]
-
-    # for regex in regex_list:
-    #     r = re.compile(regex)
-    #     matches = r.match(subject)
-
-    #     if matches:
-    #         return matches.groups()[0]
     res = re.match('.*?(?:"|&quot|&quot;|\s*)([\.0-9A-Za-z\[\]_\ \(\)]+\.\w+).*', subject)
 
     if res:
@@ -63,13 +50,15 @@ def get_filename_from(subject):
 
     return None
 
-def get_size(size):
+def get_size(size, suffix_only=False):
     """Return a human readble size."""
     hs = ('KB', 'MB', 'GB', 'TB')
     hsize = int(size) / 1024.0
     for suffix in hs:
         if hsize / 1024.0 > 1:
             hsize /= 1024.0
+        elif suffix_only:
+            return suffix
         else:
             return '%s %s' % (format(hsize, '3.2f'), suffix)
 
