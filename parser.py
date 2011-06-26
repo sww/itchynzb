@@ -1,5 +1,4 @@
 import re
-from copy import deepcopy
 from xml.etree.cElementTree import ElementTree
 
 NZB_DTD = '{http://www.newzbin.com/DTD/2003/nzb}'
@@ -18,31 +17,6 @@ def parse_nzb(filename, skip_regex=None):
         print 'not root'
         return
 
-    # for element in root.getiterator():
-    #     if element.tag.endswith('file'):
-    #         # New file object.
-    #         file_element = {'segment': [], 'groups': []}
-    #         if element.items():
-    #             for k, v in element.items():
-    #                 file_element['file_%s' % k] = v
-    #         if skip_regex:
-    #             for regex in skip_regex:
-    #                 if re.search(regex, file_element['file_subject'], re.I):
-    #                     skip = True
-    #                     break
-    #                 skip = False
-    #     elif element.tag.endswith('group'):
-    #         file_element['groups'].append(element.text.strip())
-    #     elif element.tag.endswith('segment'):
-    #         segment_metadata = deepcopy(file_element)
-    #         segment_metadata['segment'] = element.text.strip()
-    #         if element.items():
-    #             for k, v in element.items():
-    #                 segment_metadata['segment_%s' % k] = int(v)
-    #         if skip:
-    #             skipped_files.append(segment_metadata)
-    #         else:
-    #             nzb_files.append(segment_metadata)
     file_size = 0
     for element in root.getiterator():
         if element.tag.endswith('file'):
