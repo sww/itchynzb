@@ -1,3 +1,4 @@
+import collections
 import os.path
 import subprocess
 import common.helper as helper
@@ -12,11 +13,14 @@ from parser import parse_nzb
 
 COMPLETE_CHAR = '='
 
-class Tracker(object):
-    total_size = 0
-    downloaded = 0
+# class Tracker(object):
+
+#     total_size = 0
+#     downloaded = 0
+Tracker = collections.namedtuple('Tracker', 'total_size, downloaded')
 
 class DownloadPool(object):
+
     def __init__(self, settings):
         self.temp_dir = settings['temp_dir']
         self.download_path = settings['download_path']
@@ -77,7 +81,7 @@ def show_progress():
 
     # Print out completion download info.
     print '\n\n%s (%s KB/s)' % (datetime.now().strftime('%Y-%m-%d %H:%M:%S'), speed),
-    print '[%s/%s] in %d s\n' % (Tracker.downloaded, Tracker.total_size, time() - start)
+    print '[%s/%s] in %s s\n' % (Tracker.downloaded, Tracker.total_size, helper.htime(time() - start))
 
 def download(files, settings):
     temp_dir = settings['temp_dir']

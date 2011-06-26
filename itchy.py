@@ -52,7 +52,7 @@ def main():
     for nzb in nzbs:
         # TODO: strip out characters...
         nzb_name = os.path.split(nzb)[1]
-        new_dir = helper.get_download_path(settings['download_dir'], nzb_name)
+        new_dir = helper.get_download_path(settings['download_path'], nzb_name)
 
         settings['download_path'] = new_dir
 

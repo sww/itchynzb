@@ -3,6 +3,7 @@ import unittest
 from yenc import yenc_decode
 
 class TestYenc(unittest.TestCase):
+
     def setUp(self):
         # Normal case: single part.
         self.yenc = StringIO.StringIO("""=ybegin\n""")

@@ -10,24 +10,21 @@ TABLE = (
     ('=}', '='),
 )
 
-YD = ''.join([chr((i + 256 - 42) % 256) for i in range(256)])
+YD = ''.join([chr((i + 256 - 42) % 256) for i in xrange(256)])
 
 def _yenc_decode(data):
     metadata = {}
 
     for i in xrange(-1, 3):
         line = data[i].strip()
-
         if not line:
             continue
 
-        values = line.split(' ', line.count('=')-1)
+        values = line.split(' ', line.count('=') - 1)
         for attr in values[1:]:
             key, value = attr.split('=')
-
             if line.startswith('=yend') and key == 'size':
                 key = 'yend_size'
-
             if key and key not in metadata:
                 metadata[key] = value.strip()
 
@@ -35,7 +32,6 @@ def _yenc_decode(data):
             break
 
     data = data[i+1:-1]
-
     encoded_data = ''.join(map(lambda x: x.rstrip('\r\n'), data))
 
     for k, v in TABLE:

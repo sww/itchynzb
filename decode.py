@@ -4,6 +4,7 @@ import struct
 from yenc import yenc_decode
 
 class SegmentTracker(object):
+
     def __init__(self, count=0, expected=0, broken=0):
         self.count = count
         self.expected = expected
@@ -18,13 +19,13 @@ class SegmentTracker(object):
         return False
 
 class Decode(object):
+
     def __init__(self):
         self.tracker = {}
 
     def decode(self, raw_segment_path, temp_dir, download_path):
         #print 'decoding', raw_segment_path
         decoded_data, metadata = yenc_decode(raw_segment_path)
-
         if not decoded_data or not metadata:
             # Return for now; later do something about the file tracker count.
             return
