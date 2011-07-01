@@ -3,7 +3,6 @@
 hll wrld
 """
 import os
-import sys
 import common.helper as helper
 
 from optparse import OptionParser
@@ -27,14 +26,14 @@ def main():
 
     if len(nzb_files) == 0:
         parser.print_help()
-        sys.exit(2)
+        return
 
     # Read config.
     settings = read_config(options.config_file)
     
     if not settings:
         print '%s has no settings!' % options.config_file
-        sys.exit(2)
+        return
 
     if options.debug:
         settings['debug'] = options.debug

@@ -81,7 +81,7 @@ def show_progress():
 
     # Print out completion download info.
     print '\n\n%s (%s KB/s)' % (datetime.now().strftime('%Y-%m-%d %H:%M:%S'), speed),
-    print '[%s/%s] in %s s\n' % (Tracker.downloaded, Tracker.total_size, helper.htime(time() - start))
+    print '[%s/%s] in %s\n' % (Tracker.downloaded, Tracker.total_size, helper.htime(time() - start))
 
 def download(files, settings):
     temp_dir = settings['temp_dir']

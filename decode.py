@@ -36,17 +36,17 @@ class Decode(object):
         checksum = binascii.hexlify(struct.pack('!l', binascii.crc32(decoded_data)))
 
         # Get key values here.
-        dest_filename = metadata['name']
-        segment_part_size = metadata['size']
-        total_parts = metadata.get('total', None)
+        dest_filename = metadata.get('name')
+        segment_part_size = metadata.get('size')
+        total_parts = metadata.get('total')
         segment_part = metadata.get('part', 1)
         segment_end_size = metadata.get('end', 1)
 
         if 'crc32' in metadata:
             # Single-part files do not have pcrc32 keys.
-            crc_key = metadata['crc32']
+            crc_key = metadata.get('crc32')
         else:
-            crc_key = metadata['pcrc32']
+            crc_key = metadata.get('pcrc32')
 
         if len(crc_key) < 8:
             crc_key = crc_key.rjust(8, '0')
