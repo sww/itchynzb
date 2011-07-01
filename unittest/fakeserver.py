@@ -6,7 +6,11 @@ import signal
 
 DEBUG = False
 PORT = 5000
-SERVE_FILES = ['files/gplsegment@something.com']
+SERVE_FILES = [
+    'files/gplsegment@something.com',
+    'files/prjtgtnbrg01@something.com',
+    'files/prjtgtnbrg02@something.com'
+]
 
 def test_server(socket, address):
     if DEBUG: print '*', address[0], 'connected'
@@ -18,12 +22,12 @@ def test_server(socket, address):
     while True:
         client_command = fileobj.readline()
         client_command = client_command.strip()
-        if DEBUG: print client_command
+        if DEBUG: print '* Client sent "%s"' % client_command
         if not client_command:
-            if DEBUG: print 'disconnected'
+            if DEBUG: print '* Client disconnected'
             break
         elif client_command == 'quit':
-            if DEBUG: print 'quitting'
+            if DEBUG: print '* Client quitting'
             break
         elif client_command == 'squit':
             raise eventlet.StopServe
@@ -39,9 +43,13 @@ def test_server(socket, address):
             fileobj.write(resp)
 
             #eventlet.sleep(10)
+            bytes = 0
             for line in serve_file(os.path.join('files', filename)):
-                fileobj.write(line + "\r\n")
+                bytes += len(line)
+                fileobj.write(line)
                 fileobj.flush()
+
+            if DEBUG: print '* Read %d bytes' % bytes
 
             fileobj.write('.\r\n')
             fileobj.flush()
@@ -71,12 +79,9 @@ def resp_handler(command, address):
     return resp
 
 def serve_file(filename):
-    data = []
     with open(filename, 'rb') as f:
         for line in f:
-            data.append(line.strip())
-
-    return data
+            yield line
 
 def start():
     server = eventlet.listen(('0.0.0.0', PORT))
