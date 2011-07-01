@@ -34,7 +34,7 @@ class TestCommonFunctions(unittest.TestCase):
 
     def test_htime(self):
         self.assertEqual(helper.htime(1234), '20m 34s')
-        self.assertEqual(helper.htime(53), '0m 53s')
+        self.assertEqual(helper.htime(53), '53s')
         self.assertEqual(helper.htime(3720), '1h 2m 0s')
 
     def test_get_size(self):

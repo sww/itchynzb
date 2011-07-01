@@ -15,8 +15,10 @@ def htime(time):
         hours = minutes/60
         minutes = minutes % 60
         fmt = '%dh %dm %ds' % (hours, minutes, seconds)
-    else:
+    elif minutes >= 1:
         fmt = '%dm %ds' % (minutes, seconds)
+    else:
+        fmt = '%ds' % seconds
         
     return fmt
 
