@@ -3,19 +3,29 @@ from xml.etree.cElementTree import ElementTree
 
 NZB_DTD = '{http://www.newzbin.com/DTD/2003/nzb}'
 
-def parse_nzb(filename, skip_regex=None):
+def re_filter(skip_regex):
+    patterns = []
+    for regex in skip_regex:
+        patterns.append(re.compile(regex, re.I))
+    def _re_filter(subject):
+        for pattern in patterns:
+            if pattern.search(subject):
+                return True
+        return False
+    return _re_filter
+
+def parse_nzb(filename, skip_regex=[]):
     nzb_files = []
     skipped_files = []
     segment_metadata = {}
+    refilter = re_filter(skip_regex)
     skip = False
 
     tree = ElementTree()
     tree.parse(filename)
-
     root = tree.getroot()
     if not root:
-        print 'not root'
-        return
+        raise StandardError('Could not parse NZB file %s' % filename)
 
     file_size = 0
     for element in root.getiterator():
@@ -25,20 +35,15 @@ def parse_nzb(filename, skip_regex=None):
             if element.items():
                 for k, v in element.items():
                     file_element['file_%s' % k] = v
-            if skip_regex:
-                for regex in skip_regex:
-                    if re.search(regex, file_element['file_subject'], re.I):
-                        skip = True
-                        break
-                    skip = False
+            skip = refilter(file_element['file_subject'])
         elif element.tag.endswith('group'):
             file_element['groups'].append(element.text.strip())
         elif element.tag.endswith('segment'):
             segment_metadata = {}
             segment_metadata['segment'] = element.text.strip()
             if element.items():
-                for k, v in element.items():
-                    segment_metadata['segment_%s' % k] = int(v)
+                for attr, value in element.items():
+                    segment_metadata['segment_%s' % attr] = int(value)
             file_element['segments'].append(segment_metadata)
             if not skip:
                 file_size += segment_metadata['segment_bytes']
