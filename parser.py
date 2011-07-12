@@ -3,22 +3,22 @@ from xml.etree.cElementTree import ElementTree
 
 NZB_DTD = '{http://www.newzbin.com/DTD/2003/nzb}'
 
-def re_filter(skip_regex):
+def re_filter(skip_regex, invert=False):
     patterns = []
     for regex in skip_regex:
         patterns.append(re.compile(regex, re.I))
     def _re_filter(subject):
         for pattern in patterns:
             if pattern.search(subject):
-                return True
-        return False
+                return True is not invert
+        return False is not invert
     return _re_filter
 
-def parse_nzb(filename, skip_regex=[]):
+def parse_nzb(filename, skip_regex=[], invert=False):
     nzb_files = []
     skipped_files = []
     segment_metadata = {}
-    refilter = re_filter(skip_regex)
+    refilter = re_filter(skip_regex, invert)
     skip = False
 
     tree = ElementTree()
