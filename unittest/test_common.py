@@ -21,15 +21,19 @@ class TestCommonFunctions(unittest.TestCase):
             ("""[1235]-[#chan@IrC]-[FULL]-[12345]-[21/79] - some.file.r01 (1/50)""", 'some.file.r01'),
             ("""[353]-[#chan@IrC]-[FULL]-[10202]-[21/79] - "some.file.r01" (1/50)""", 'some.file.r01'),
             ("""New subject name "Filename goes here (v5.0) (echo).rar" (1/3)""", 'Filename goes here (v5.0) (echo).rar'),
+            ("""[65781]-[FULL]-[#a.b.test@EFNet]-[ Legit.File.MEDiA-GROUP ]-[25/29] - &quot;a.real.file.vol01+02.par2&quot;""", 'a.real.file.vol01+02.par2'),
+            ("""[65781]-[FULL]-[#a.b.test@EFNet]-[ Legit.File.MEDiA-GROUP ]-[25/29] - a.real.file.vol01+02.par2 blah""", 'a.real.file.vol01+02.par2'),
             ("""Blank""", '')
         ]
 
         for subject, expected_filename in test_subjects:
-            filename = helper.get_filename_from(subject)
+            potential = helper.get_filename_from(subject)
             try:
-                self.assertEqual(filename, expected_filename)
+                self.assertTrue(expected_filename in potential)
             except:
-                print subject
+                print '* failed on subject', repr(subject)
+                print '* got', repr(potential)
+                print '* expected', repr(expected_filename)
                 raise
 
     def test_htime(self):

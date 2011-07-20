@@ -39,14 +39,18 @@ def get_download_path(base_path, new_dir):
 
     return os.path.join(base_path, new_dir)
 
+SUBJECT_RE = re.compile('(?:"|&quot|&quot;)([\.\w\[\]\ \(\)\+]+\.\w+)')
+SUBJECT_RE_FAILOVER = re.compile('(?:\s*)([\.\w\[\]\ \(\)\+]+\.\w+)')
+
 def get_filename_from(subject):
     """Return a filename from a subject."""
-    # # Use multiple regexs because I can't figure one that works.
-    res = re.match('.*?(?:"|&quot|&quot;|\s*)([\.0-9A-Za-z\[\]_\ \(\)]+\.\w+).*', subject)
+    # Using two regular expressions becaause including the space in the positive
+    # lookahead matches the wrong target in some subjects.
+    res = SUBJECT_RE.search(subject)
     if res:
         return res.groups()[0]
 
-    return ''
+    return SUBJECT_RE_FAILOVER.findall(subject) or ''
 
 def get_size(size, suffix_only=False):
     """Return a human readble size."""
