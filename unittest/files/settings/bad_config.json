@@ -1,0 +1,10 @@
+{
+    "host": "localhost",
+    "username": "user",
+    "password": "pass",
+    "port": 5000,
+    "connections": 1,
+    "download_path": "downloads",
+    "temp_dir": "temp",
+    "skip_regex": [".*\\.par2", ".*\\.avi(?!\\.)", ".*\\.nzb"]
+}

@@ -1,0 +1,10 @@
+{
+    "host": "localhost",
+    "username": "testuser",
+    "password": "testpass",
+    "port": 5000,
+    "connections": 1,
+    "download_dir": "testdownloads",
+    "temp_dir": "testtemp",
+    "skip_regex": []
+}
