@@ -1,15 +1,17 @@
-"""A test server."""
+"""A test NNTP server that serves certain specified files."""
 
-import eventlet
 import os
 import signal
 
+import eventlet
+
 DEBUG = False
 PORT = 5000
+SERVE_DIRECTORY = 'files/segments'
 SERVE_FILES = [
-    'files/gplsegment@something.com',
-    'files/prjtgtnbrg01@something.com',
-    'files/prjtgtnbrg02@something.com'
+    os.path.join(SERVE_DIRECTORY, 'gplsegment@something.com'),
+    os.path.join(SERVE_DIRECTORY, 'prjtgtnbrg01@something.com'),
+    os.path.join(SERVE_DIRECTORY, 'prjtgtnbrg02@something.com')
 ]
 
 def test_server(socket, address):
@@ -44,7 +46,7 @@ def test_server(socket, address):
 
             #eventlet.sleep(10)
             bytes = 0
-            for line in serve_file(os.path.join('files', filename)):
+            for line in serve_file(os.path.join(SERVE_DIRECTORY, filename)):
                 bytes += len(line)
                 fileobj.write(line)
                 fileobj.flush()
@@ -68,8 +70,8 @@ def resp_handler(command, address):
         resp = '281 OK\n'
     elif command.startswith('body'):
         filename = command.split()[-1].strip('<>')
-        temp = os.path.join('files', filename)
-        if temp in SERVE_FILES and os.path.exists(temp):
+        full_filepath = os.path.join(SERVE_DIRECTORY, filename)
+        if full_filepath in SERVE_FILES and os.path.exists(full_filepath):
             resp = '222 0 <%s>\r\n' % filename
         else:
             resp = '430 No such article.\n'
@@ -90,6 +92,7 @@ def start():
         eventlet.serve(server, test_server)
     except Exception, msg:
         if DEBUG: print Exception, msg
+        raise
 
 def stop(*args):
     if DEBUG: print '* Stopping'
