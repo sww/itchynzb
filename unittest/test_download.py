@@ -1,12 +1,17 @@
 import binascii
-import eventlet
 import os
 import shutil
-import StringIO
 import struct
+import threading
 import unittest
+
 import download
 import fakeserver
+
+fakeserver.DEBUG = False
+server = threading.Thread(target=fakeserver.start)
+server.setDaemon(True)
+server.start()
 
 class TestDownload(unittest.TestCase):
 
@@ -21,8 +26,6 @@ class TestDownload(unittest.TestCase):
 
         os.mkdir(self.download_dir)
         os.mkdir(self.temp_dir)
-        # Start the test server.
-        self.server = eventlet.spawn(fakeserver.start)
 
         self.settings = {
             'host': 'localhost',
@@ -35,32 +38,8 @@ class TestDownload(unittest.TestCase):
             'skip_regex': []
         }
 
-        self.nzb = StringIO.StringIO("""<?xml version="1.0" encoding="iso-8859-1" ?>
-          <!DOCTYPE nzb PUBLIC "-//newzBin//DTD NZB 1.0//EN" "http://www.newzbin.com/DTD/nzb/nzb-1.0.dtd">
-          <nzb xmlns="http://www.newzbin.com/DTD/2003/nzb">
-            <file poster="some poster@unknown.com" date="1298537493" subject="gpl.txt">
-              <groups>
-                <group>alt.cool</group>
-              </groups>
-              <segments>
-                <segment bytes="18264" number="1">gplsegment@something.com</segment>
-              </segments>
-            </file>
-           </nzb>""")
-
-        self.nzb2 = StringIO.StringIO("""<?xml version="1.0" encoding="iso-8859-1" ?>
-          <!DOCTYPE nzb PUBLIC "-//newzBin//DTD NZB 1.0//EN" "http://www.newzbin.com/DTD/nzb/nzb-1.0.dtd">
-          <nzb xmlns="http://www.newzbin.com/DTD/2003/nzb">
-            <file poster="some poster@unknown.com" date="1298537493" subject="gut96back.jpg">
-              <groups>
-                <group>alt.cool</group>
-              </groups>
-              <segments>
-                <segment bytes="255937" number="1">prjtgtnbrg01@something.com</segment>
-                <segment bytes="150445" number="2">prjtgtnbrg02@something.com</segment>
-              </segments>
-            </file>
-           </nzb>""")
+        self.nzb = 'files/nzb/gpl.nzb'
+        self.nzb2 = 'files/nzb/gutenberg.nzb'
 
     def test_download(self):
         """Test a download of a single segment file."""
@@ -95,7 +74,6 @@ class TestDownload(unittest.TestCase):
             shutil.rmtree(self.download_dir)
         if os.path.exists(self.temp_dir):
             shutil.rmtree(self.temp_dir)
-        self.server.kill()
 
 if __name__ == '__main__':
     unittest.main()
