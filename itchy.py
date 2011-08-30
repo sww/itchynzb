@@ -1,36 +1,21 @@
-#
-"""
-hll wrld
-"""
+#!/usr/bin/python
+
+"""ItchyNZB"""
+
 import os
-import common.helper as helper
 
 from optparse import OptionParser
-from config import read_config
-from download import start
-#from postprocess import postprocess
 
-def main():
-    parser = OptionParser(usage='usage: %prog [options] nzb1 nzb2 ...')
+import common.helper as helper
+import config
+import download
 
-    parser.add_option('-c', '--config', dest='config_file', help='Use config FILE.',
-                      default='settings.conf', metavar='FILE')
-    parser.add_option('-d', '--debug', dest='debug', action='store_true',
-                      help='Print debug information', default=False)
-    parser.add_option('-p', '--par2', action='store_true', dest='par2',
-                      help='Downloads parity files only.', default=False)
-    parser.add_option('-g', '--get', dest='get', help='Get files only matching PATTERN',
-                      metavar='PATTERN')
-    
-    (options, nzb_files) = parser.parse_args()
-
-    if len(nzb_files) == 0:
+def main(nzb_files, options):
+    if not nzb_files:
         parser.print_help()
         return
 
-    # Read config.
-    settings = read_config(options.config_file)
-    
+    settings = config.read_config(options.config_file)
     if not settings:
         print '%s has no settings!' % options.config_file
         return
@@ -38,35 +23,41 @@ def main():
     if options.debug:
         settings['debug'] = options.debug
         print settings
-    if options.par2:
-        settings['par2'] = options.par2
-        settings['skip_regex'] = []
 
-    nzbs = []
-    
-    for nzb in nzb_files:
-        nzb = helper.get_nzb_file(nzb)
-        nzbs += nzb
-        
+    if options.pattern:
+        settings['skip_regex'] = options.pattern
+        settings['invert'] = True
+    elif options.par2:
+        settings['skip_regex'] = ['\.par2']
+        settings['invert'] = True
+
+    nzbs = [nzb for nzb in helper.get_nzb_file(nzb_files)]
     for nzb in nzbs:
-        # TODO: strip out characters...
         nzb_name = os.path.split(nzb)[1]
-        new_dir = helper.get_download_path(settings['download_path'], nzb_name)
-
+        new_dir = helper.get_download_path(settings.get('download_dir'), nzb_name)
         settings['download_path'] = new_dir
-
         if not os.path.exists(new_dir):
-            #print 'made new dir %s ' % new_dir
+            if settings.get('debug'):
+                print 'made new dir %s ' % new_dir
             os.mkdir(new_dir)
-            
-        #print settings['download_path']
-        start(nzb, settings)
 
-        # if settings['delete_nzb_when_done']:
-        #     if settings['debug']:
-        #         print '[DEBUG] removing %s' % nzb
-                
-        #     os.remove(nzb)
+        if settings.get('debug'):
+            print settings['download_path']
+
+        download.start(nzb, settings)
 
 if __name__ == '__main__':
-    main()
+    parser = OptionParser(usage='usage: %prog [options] nzb1 nzb2 ...')
+
+    parser.add_option('-c', '--config', dest='config_file', help='Use config FILE.',
+                      default='settings.json', metavar='FILE')
+    parser.add_option('--debug', dest='debug', action='store_true',
+                      help='Print debug information', default=False)
+    parser.add_option('-p', '--par2', action='store_true', dest='par2',
+                      help='Downloads parity files only.', default=False)
+    parser.add_option('-g', '--pattern', dest='pattern', help='Get files only matching PATTERN',
+                      metavar='PATTERN')
+
+    (options, nzb_files) = parser.parse_args()
+
+    main(nzb_files, options)
