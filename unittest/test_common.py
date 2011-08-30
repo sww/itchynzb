@@ -1,5 +1,4 @@
 import os
-import tempfile
 import unittest
 import common.helper as helper
 
@@ -22,7 +21,9 @@ class TestCommonFunctions(unittest.TestCase):
             ("""[353]-[#chan@IrC]-[FULL]-[10202]-[21/79] - "some.file.r01" (1/50)""", 'some.file.r01'),
             ("""New subject name "Filename goes here (v5.0) (echo).rar" (1/3)""", 'Filename goes here (v5.0) (echo).rar'),
             ("""[65781]-[FULL]-[#a.b.test@EFNet]-[ Legit.File.MEDiA-GROUP ]-[25/29] - &quot;a.real.file.vol01+02.par2&quot;""", 'a.real.file.vol01+02.par2'),
-            ("""[65781]-[FULL]-[#a.b.test@EFNet]-[ Legit.File.MEDiA-GROUP ]-[25/29] - a.real.file.vol01+02.par2 blah""", 'a.real.file.vol01+02.par2'),
+            ("""[65781]-[FULL]-[#a.b.test@EFNet]-[ Legit.File.MEDiA-GROUP ]-[25/29] - a.real.file.vol01+02.par2 blah""", 'a.real.file.vol01+02.par2'), # Should test the second regex.
+            ("""Just a file.jpg""", "Just a file.jpg"),
+            ("""filename.jpg""", "filename.jpg"),
             ("""Blank""", '')
         ]
 
@@ -30,7 +31,7 @@ class TestCommonFunctions(unittest.TestCase):
             potential = helper.get_filename_from(subject)
             try:
                 self.assertTrue(expected_filename in potential)
-            except:
+            except AssertionError:
                 print '* failed on subject', repr(subject)
                 print '* got', repr(potential)
                 print '* expected', repr(expected_filename)
@@ -54,14 +55,21 @@ class TestCommonFunctions(unittest.TestCase):
         self.assertEqual(helper.get_size(0), '0.00 KB')
 
     def test_get_nzb_file(self):
-        self.assertEqual(helper.get_nzb_file('.'), ['./gpl.nzb', './test.nzb'])
-        tempdir = tempfile.mkdtemp()
-        self.assertEqual(helper.get_nzb_file(tempdir), [])
-        os.rmdir(tempdir)
+        python_path = os.environ.get('PYTHONPATH').split(':')[-1]
+        nzb_dir = 'unittest/files/nzb'
+        settings_dir = 'unittest/files/settings'
+        
+        self.assertEqual(helper.get_nzb_file(os.path.join(python_path, nzb_dir)),
+                         [os.path.join(python_path, nzb_dir, nzb) for nzb in ['gpl.nzb', 'gutenberg.nzb']])
+        self.assertEqual(helper.get_nzb_file(os.path.join(python_path, settings_dir)), [])
 
     def test_get_download_path(self):
         self.assertEqual(helper.get_download_path('', 'test.nzb'), 'test')
         self.assertEqual(helper.get_download_path('dir/', 'test.nzb'), 'dir/test')
+
+    def test_file_exists(self):
+        self.assertTrue(helper.file_exists('.', 'test_common.py'))
+        self.assertFalse(helper.file_exists('.', 'nosuch file'))
    
 if __name__ == '__main__':
     unittest.main()
