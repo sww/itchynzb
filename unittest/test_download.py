@@ -16,6 +16,7 @@ server.start()
 class TestDownload(unittest.TestCase):
 
     def setUp(self):
+        self.nzb_dir = 'files/nzb'
         self.download_dir = 'testdownloads'
         self.temp_dir = 'testtemp'
 
@@ -38,8 +39,9 @@ class TestDownload(unittest.TestCase):
             'skip_regex': []
         }
 
-        self.nzb = 'files/nzb/gpl.nzb'
-        self.nzb2 = 'files/nzb/gutenberg.nzb'
+        self.nzb = os.path.join(self.nzb_dir, 'gpl.nzb')
+        self.nzb2 = os.path.join(self.nzb_dir, 'gutenberg.nzb')
+        self.broken_nzb = os.path.join(self.nzb_dir, 'broken.nzb')
 
     def test_download(self):
         """Test a download of a single segment file."""
@@ -68,6 +70,21 @@ class TestDownload(unittest.TestCase):
             data = f.read()
         checksum = binascii.hexlify(struct.pack('!l', binascii.crc32(data)))
         self.assertEqual(checksum, '82fe6b72')
+
+    def test_incomplete_download(self):
+        """Test a file that has a broken segment."""
+        # Expected behavior: moooooo.
+        download.start(self.broken_nzb, self.settings)
+        self.assertTrue(os.path.exists(os.path.join(self.download_dir, 'gut96back.jpg')))
+        # Make sure it's being going where it's supposed to go.
+        self.assertEqual(os.listdir(self.download_dir), ['gut96back.jpg'])
+        # Make sure we're cleaning up after ourselves.
+        #self.assertEqual(os.listdir(self.temp_dir), [])
+
+        with open(os.path.join(self.download_dir, 'gut96back.jpg')) as f:
+            data = f.read()
+        checksum = binascii.hexlify(struct.pack('!l', binascii.crc32(data)))
+        self.assertEqual(checksum, '7516546f') # Incomplete file.
 
     def tearDown(self):
         if os.path.exists(self.download_dir):

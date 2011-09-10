@@ -1,11 +1,14 @@
-import os.path
 import subprocess
-import common.helper as helper
+
 from datetime import datetime
 from time import time
+
 from eventlet import greenthread, sleep, tpool
 from eventlet.greenpool import GreenPool
 from eventlet.queue import Queue
+
+import common.helper as helper
+
 from decode import Decode
 from nntp import NNTP
 from parser import parse_nzb
@@ -77,7 +80,7 @@ def show_progress():
     helper.print_static(' %s%% [%s] %s' % ('100', COMPLETE_CHAR * progress_bar_length, speed), width)
 
     # Print out completion download info.
-    print '\n\n%s (%s KB/s)' % (datetime.now().strftime('%Y-%m-%d %H:%M:%S'), speed),
+    print '\n\n%s (%s)' % (datetime.now().strftime('%Y-%m-%d %H:%M:%S'), speed),
     print '[%s/%s] in %s\n' % (Tracker.downloaded, Tracker.total_size, helper.htime(time() - start))
 
 def download(files, settings):
@@ -92,7 +95,8 @@ def download(files, settings):
     for file_ in files:
         # Check if file from subject exists.
         subject_filename = helper.get_filename_from(file_['file_subject'])
-        if os.path.exists(os.path.join(download_path, subject_filename)):
+
+        if helper.file_exists(download_path, subject_filename):
             Tracker.total_size -= sum([i['segment_bytes'] for i in file_['segments']])
             print subject_filename, 'already exists'
             continue

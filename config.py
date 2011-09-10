@@ -1,6 +1,6 @@
 import json
 
-def read_config(config='settings.conf'):
+def read_config(config='settings.json'):
     with open(config) as cfg:
         settings = json.loads(cfg.read())
 

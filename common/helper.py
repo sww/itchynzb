@@ -1,11 +1,20 @@
 """
 Miscellaneous helper/convenience functions.
 """
+
 import glob
 import os
 import re
 import sys
+
 from compressed import unzip
+
+def file_exists(path, files):
+    for _file in files:
+        if os.path.exists(os.path.join(path, _file)):
+            return True
+
+    return False
 
 def htime(time):
     """Returns a human readable time."""
@@ -24,11 +33,14 @@ def htime(time):
 
 def get_nzb_file(path):
     """Returns a nzb file or files for given a path."""
-    if path.lower().endswith('.zip'):
-        return unzip(path)
-    elif os.path.isdir(path):
-        nzb_files = glob.glob(os.path.join(path, '*.nzb'))
-        return nzb_files
+    if isinstance(path, str):
+        if path.lower().endswith('.zip'):
+            return unzip(path)
+        elif os.path.isdir(path):
+            nzb_files = glob.glob(os.path.join(path, '*.nzb'))
+            return nzb_files
+    elif isinstance(path, list):
+        return path
     else:
         return [path]
 
@@ -48,7 +60,7 @@ def get_filename_from(subject):
     # lookahead matches the wrong target in some subjects.
     res = SUBJECT_RE.search(subject)
     if res:
-        return res.groups()[0]
+        return res.groups()
 
     return SUBJECT_RE_FAILOVER.findall(subject) or ''
 
@@ -72,6 +84,13 @@ def print_static(string, width=80):
     sys.stdout.write('\r%s%s' % (string, ' ' * (width-len(string))))
     sys.stdout.flush()
 
-if __name__ == '__main__':
-    print get_filename_from("""New subject name "Filename goes here (v5.0) (echo).rar" (1/3)""")
-    print get_filename_from("""[U4A] 150411-22:59:42[01/26] - &quot;150411-22:59:42.par2&quot; yEnc (1/1)""")
+def re_filter(skip_regex, invert=False):
+    patterns = []
+    for regex in skip_regex:
+        patterns.append(re.compile(regex, re.I))
+    def _re_filter(subject):
+        for pattern in patterns:
+            if pattern.search(subject):
+                return True is not invert
+        return False is not invert
+    return _re_filter

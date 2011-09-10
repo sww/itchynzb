@@ -55,13 +55,13 @@ class TestCommonFunctions(unittest.TestCase):
         self.assertEqual(helper.get_size(0), '0.00 KB')
 
     def test_get_nzb_file(self):
-        python_path = os.environ.get('PYTHONPATH').split(':')[-1]
-        nzb_dir = 'unittest/files/nzb'
-        settings_dir = 'unittest/files/settings'
-        
-        self.assertEqual(helper.get_nzb_file(os.path.join(python_path, nzb_dir)),
-                         [os.path.join(python_path, nzb_dir, nzb) for nzb in ['gpl.nzb', 'gutenberg.nzb']])
-        self.assertEqual(helper.get_nzb_file(os.path.join(python_path, settings_dir)), [])
+        cwd = os.getcwd()
+        nzb_dir = 'files/nzb'
+        settings_dir = 'files/settings'
+
+        self.assertEqual(helper.get_nzb_file(os.path.join(cwd, nzb_dir)),
+                         [os.path.join(cwd, nzb_dir, nzb) for nzb in ['broken.nzb', 'gpl.nzb', 'gutenberg.nzb']])
+        self.assertEqual(helper.get_nzb_file(os.path.join(cwd, settings_dir)), [])
 
     def test_get_download_path(self):
         self.assertEqual(helper.get_download_path('', 'test.nzb'), 'test')
