@@ -25,7 +25,15 @@ class Decode(object):
 
     def decode(self, raw_segment_path, temp_dir, download_path):
         #print 'decoding', raw_segment_path
-        decoded_data, metadata = yenc_decode(raw_segment_path)
+        try:
+            decoded_data, metadata = yenc_decode(raw_segment_path)
+        except IndexError:
+            # Empty/broken file; most likely a broken segment.
+            return
+        except ValueError:
+            # Something went wrong.
+            return
+
         if not decoded_data or not metadata:
             # Return for now; later do something about the file tracker count.
             return
