@@ -1,6 +1,7 @@
 import binascii
 import os
 import struct
+
 from yenc import yenc_decode
 
 class SegmentTracker(object):
@@ -32,6 +33,9 @@ class Decode(object):
             return
         except ValueError:
             # Something went wrong.
+            return
+        except IOError:
+            # No such file.
             return
 
         if not decoded_data or not metadata:
@@ -89,10 +93,12 @@ class Decode(object):
         with open(dest_filename, 'wb') as f:
             for i in range(1, number + 1):
                 segment_filename = os.path.join(temp_dir, '%s.%d' % (filename, i))
-                with open(segment_filename, 'rb') as segment_file:
-                    f.write(segment_file.read())
-                # Cleanup.
-                os.remove(segment_filename)
+                try:
+                    with open(segment_filename, 'rb') as segment_file:
+                        f.write(segment_file.read())
+                    os.remove(segment_filename)
+                except IOError:
+                    continue
 
         del self.tracker[filename]
 
