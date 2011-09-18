@@ -39,6 +39,7 @@ def get_nzb_file(path):
         elif os.path.isdir(path):
             nzb_files = glob.glob(os.path.join(path, '*.nzb'))
             return nzb_files
+        return path
     elif isinstance(path, list):
         files = []
         for f in path:

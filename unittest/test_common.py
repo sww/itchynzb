@@ -60,15 +60,21 @@ class TestCommonFunctions(unittest.TestCase):
         nzb_dir = 'files/nzb'
         settings_dir = 'files/settings'
 
+        # Test a single file.
+        self.assertEqual([helper.get_nzb_file(os.path.join(cwd, nzb_dir, 'broken.nzb'))],
+                         [os.path.join(cwd, nzb_dir, nzb) for nzb in ['broken.nzb']])
+
+        # Test a directory.
         self.assertEqual(helper.get_nzb_file(os.path.join(cwd, nzb_dir)),
                          [os.path.join(cwd, nzb_dir, nzb) for nzb in ['broken.nzb', 'gpl.nzb', 'gutenberg.nzb']])
-        self.assertEqual(helper.get_nzb_file(os.path.join(cwd, settings_dir)), [])
 
         # Test a zip file.
         self.assertEqual(helper.get_nzb_file(os.path.join(cwd, nzb_dir, 'nzbs.zip')), [os.path.join(cwd, nzb_dir, nzb) for nzb in ['gpl.nzb', 'gutenberg.nzb']])
 
         # OptionParser's args come in a list, so emulate that.
         self.assertEqual(helper.get_nzb_file([os.path.join(cwd, nzb_dir, 'nzbs.zip')]), [os.path.join(cwd, nzb_dir, nzb) for nzb in ['gpl.nzb', 'gutenberg.nzb']])
+
+        self.assertEqual(helper.get_nzb_file(os.path.join(cwd, settings_dir)), [])
 
     def test_get_download_path(self):
         self.assertEqual(helper.get_download_path('', 'test.nzb'), 'test')
