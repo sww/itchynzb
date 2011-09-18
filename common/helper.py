@@ -40,7 +40,10 @@ def get_nzb_file(path):
             nzb_files = glob.glob(os.path.join(path, '*.nzb'))
             return nzb_files
     elif isinstance(path, list):
-        return path
+        files = []
+        for f in path:
+            files += get_nzb_file(f)
+        return files
     else:
         return [path]
 

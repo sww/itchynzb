@@ -1,5 +1,6 @@
 import os
 import unittest
+
 import common.helper as helper
 
 class TestCommonFunctions(unittest.TestCase):
@@ -63,6 +64,12 @@ class TestCommonFunctions(unittest.TestCase):
                          [os.path.join(cwd, nzb_dir, nzb) for nzb in ['broken.nzb', 'gpl.nzb', 'gutenberg.nzb']])
         self.assertEqual(helper.get_nzb_file(os.path.join(cwd, settings_dir)), [])
 
+        # Test a zip file.
+        self.assertEqual(helper.get_nzb_file(os.path.join(cwd, nzb_dir, 'nzbs.zip')), [os.path.join(cwd, nzb_dir, nzb) for nzb in ['gpl.nzb', 'gutenberg.nzb']])
+
+        # OptionParser's args come in a list, so emulate that.
+        self.assertEqual(helper.get_nzb_file([os.path.join(cwd, nzb_dir, 'nzbs.zip')]), [os.path.join(cwd, nzb_dir, nzb) for nzb in ['gpl.nzb', 'gutenberg.nzb']])
+
     def test_get_download_path(self):
         self.assertEqual(helper.get_download_path('', 'test.nzb'), 'test')
         self.assertEqual(helper.get_download_path('dir/', 'test.nzb'), 'dir/test')
@@ -70,6 +77,9 @@ class TestCommonFunctions(unittest.TestCase):
     def test_file_exists(self):
         self.assertTrue(helper.file_exists('.', 'test_common.py'))
         self.assertFalse(helper.file_exists('.', 'nosuch file'))
+
+    def tearDown(self):
+        pass
    
 if __name__ == '__main__':
     unittest.main()
